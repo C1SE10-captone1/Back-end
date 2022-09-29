@@ -13,6 +13,8 @@ from .app_settings import (
     PasswordResetSerializer, PasswordResetConfirmSerializer,
     PasswordChangeSerializer, JWTSerializer, create_token
 )
+
+from rest_framework_jwt.settings import api_settings as jwt_settings
 from .utils import jwt_encode
 from django.conf import settings
 from django.utils.decorators import method_decorator
@@ -101,7 +103,6 @@ class LoginView(GenericAPIView):
 
         response = Response(serializer.data, status=status.HTTP_200_OK)
         if getattr(settings, 'REST_USE_JWT', False):
-            from rest_framework_jwt.settings import api_settings as jwt_settings
             if jwt_settings.JWT_AUTH_COOKIE:
                 from datetime import datetime
                 expiration = (datetime.utcnow() + jwt_settings.JWT_EXPIRATION_DELTA)
@@ -146,7 +147,6 @@ class LogoutView(APIView):
         response = Response({"detail": _("Successfully logged out.")},
                             status=status.HTTP_200_OK)
         if getattr(settings, 'REST_USE_JWT', False):
-            from rest_framework_jwt.settings import api_settings as jwt_settings
             if jwt_settings.JWT_AUTH_COOKIE:
                 response.delete_cookie(jwt_settings.JWT_AUTH_COOKIE)
         return response
